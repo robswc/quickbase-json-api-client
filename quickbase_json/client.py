@@ -29,6 +29,10 @@ class QuickbaseJSONClient:
         """
 
         body = {'from': table, 'select': select, 'where': where}
+
+        # add optional args
+        body.update(kwargs)
+
         return requests.post('https://api.quickbase.com/v1/records/query', headers=self.headers, json=body).json()
 
     def insert_update_records(self, table: str, data: list):
