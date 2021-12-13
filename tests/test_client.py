@@ -1,14 +1,14 @@
-import datetime
+
 
 import pytest
 
-from quickbase_json import client as qbc
-from quickbase_json.helpers import Where, IncorrectParameters
-from quickbase_json.helpers import Sort as qbs
-from quickbase_json.helpers import Group as qbg
+
 
 
 # test where
+from src.quickbase_json.helpers import Where, IncorrectParameters
+
+
 @pytest.mark.parametrize('fid, operator, value, expected', [
     (3, 'EX', 12345, '{3.EX.12345}'),
     (3, 'XEX', 12345, '{3.XEX.12345}'),

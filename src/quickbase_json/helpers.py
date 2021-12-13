@@ -37,7 +37,7 @@ class Where(QuickbaseParameter):
 
     def build(self, **kwargs):
 
-        if kwargs.get('join') == 'OR':
+        if kwargs.get('join'):
             # check that value is a list
             if isinstance(self.value, list) is False:
                 raise IncorrectParameters(self.value, list)
@@ -48,7 +48,7 @@ class Where(QuickbaseParameter):
                 queries.append(build_query_str(self.fid, self.operator, v))
 
             # return chain of queries
-            return 'OR'.join(queries)
+            return f"{kwargs.get('join')}".join(queries)
 
         return build_query_str(self.fid, self.operator, self.value)
 

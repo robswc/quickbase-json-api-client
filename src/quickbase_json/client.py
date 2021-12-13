@@ -1,11 +1,16 @@
 import requests
-import json
 
-
+from src.quickbase_json.qb_response import QBResponse
 
 
 class QuickbaseJSONClient:
     def __init__(self, realm, auth, **kwargs):
+        """
+        Creates a client object.
+        :param realm: quickbase realm
+        :param auth: quickbase user token
+        :param kwargs:
+        """
         self.realm = realm
         self.auth = auth
         self.headers = {
@@ -30,12 +35,21 @@ class QuickbaseJSONClient:
         :return: json data of records {data: ..., fields: ...}
         """
 
+        # create request body
         body = {'from': table, 'select': select, 'where': where}
+        # update with keyword args
+        body.update(kwargs)
 
         # add optional args
         body.update(kwargs)
+        r = requests.post('https://api.quickbase.com/v1/records/query', headers=self.headers, json=body).json()
 
-        return requests.post('https://api.quickbase.com/v1/records/query', headers=self.headers, json=body).json()
+        # create response object
+        res = QBResponse('records')
+
+        # update response object with JSON data from request
+        res.update(r)
+        return res
 
     def insert_update_records(self, table: str, data: list):
         """

@@ -140,7 +140,7 @@ class QBResponse(dict):
     def currency(self, currency_type):
         return self
 
-    def transform(self, transformation):
+    def transform(self, transformation, **kwargs):
         """
         Transforms the data, given a transformation argument.
         :param transformation: type of transformation.
@@ -179,7 +179,6 @@ class QBResponse(dict):
 
             for field in fields:
                 if field.get('type') == 'date time':
-
                     if type(self.get('data') == list):
                         for row in data:
                             dt_field = row.get(str(field.get('id')))
@@ -191,6 +190,20 @@ class QBResponse(dict):
                                 str_dt = dt_field.get('value')
                                 dt = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
                                 row.update({str(field.get('id')): {'value': dt}})
+
+                if field.get('type') == 'date':
+                    if type(self.get('data') == list):
+                        for row in data:
+                            dt_field = row.get(str(field.get('id')))
+                            if dt_field.get('value') is None:
+                                str_dt = dt_field
+                                dt = datetime.datetime.strptime(str_dt, kwargs.get('datestring'))
+                                row.update({str(field.get('id')): dt})
+                            else:
+                                str_dt = dt_field.get('value')
+                                dt = datetime.datetime.strptime(str_dt, kwargs.get('datestring'))
+                                row.update({str(field.get('id')): {'value': dt}})
+
 
         if transformation == 'intround':
             """Rounds numbers and transforms them to ints"""
