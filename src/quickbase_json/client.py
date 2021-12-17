@@ -105,4 +105,8 @@ class QuickbaseJSONClient:
 
         headers = self.headers
         params = {'appId': f'{app_id}'}
+        body = None
         return requests.post('https://api.quickbase.com/v1/tables', params=params, headers=headers, json=body).json()
+
+    def __str__(self):
+        return f'Quickbase Client: {self.realm}'
