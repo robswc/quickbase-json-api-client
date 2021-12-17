@@ -1,6 +1,6 @@
 import requests
 
-from src.quickbase_json.qb_response import QBResponse
+from quickbase_json.qb_response import QBResponse
 
 
 class QuickbaseJSONClient:

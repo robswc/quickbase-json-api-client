@@ -6,7 +6,7 @@ import pytest
 
 
 # test where
-from src.quickbase_json.helpers import Where, IncorrectParameters
+from quickbase_json.helpers import Where, IncorrectParameters
 
 
 @pytest.mark.parametrize('fid, operator, value, expected', [
