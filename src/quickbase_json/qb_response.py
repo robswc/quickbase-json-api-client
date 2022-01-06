@@ -1,7 +1,7 @@
 import datetime
 
 
-class bcolors:
+class Bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
@@ -28,13 +28,13 @@ class QBResponse(dict):
         """
         if self.response_type == 'records':
 
-            print(f'{bcolors.OKBLUE}Sample Data:\n')
+            print(f'{Bcolors.OKBLUE}Sample Data:\n')
             try:
                 print('\t', self.get('data')[0], '\n')
             except KeyError as e:
                 print('\t', self.get('data'), '\n')
-            print(bcolors.ENDC)
-            print(f'{bcolors.OKGREEN}Fields:\n')
+            print(Bcolors.ENDC)
+            print(f'{Bcolors.OKGREEN}Fields:\n')
 
             fields_info = []
             for field in self.get('fields'):
@@ -47,12 +47,12 @@ class QBResponse(dict):
             # print field info
             for fi in fields_info:
                 print('\t', '{:<16s} {:<32s} {:<16s}'.format(fi[0], fi[1], fi[2]))
-            print(bcolors.ENDC)
+            print(Bcolors.ENDC)
 
-            print(f'\n{bcolors.OKCYAN}Metadata:\n')
+            print(f'\n{Bcolors.OKCYAN}Metadata:\n')
             for k, v in self.get('metadata').items():
                 print('\t{:<16s} {:<16s}'.format(k, str(v)))
-            print(bcolors.ENDC)
+            print(Bcolors.ENDC)
 
     def fields(self, prop):
         """
@@ -63,6 +63,10 @@ class QBResponse(dict):
         return [i.get(prop) for i in self.get('fields')]
 
     def data(self):
+        """
+        Gets data, shorthand for .get('data')
+        :return: data
+        """
         return self.get('data')
 
     def prd(self, data):
@@ -203,7 +207,6 @@ class QBResponse(dict):
                                 str_dt = dt_field.get('value')
                                 dt = datetime.datetime.strptime(str_dt, kwargs.get('datestring'))
                                 row.update({str(field.get('id')): {'value': dt}})
-
 
         if transformation == 'intround':
             """Rounds numbers and transforms them to ints"""
