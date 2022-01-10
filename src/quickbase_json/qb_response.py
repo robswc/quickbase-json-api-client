@@ -22,19 +22,20 @@ class QBResponse(dict):
             self.update(kwargs.get('sample_data'))
         super().__init__()
 
-    def info(self):
+    def info(self, prt=True):
         """
         Prints information about the response.
+        :prt: Set to False to only grab the return as a string.
         """
         if self.response_type == 'records':
-
-            print(f'{Bcolors.OKBLUE}Sample Data:\n')
+            info = []
+            info.append(f'{Bcolors.OKBLUE}Sample Data:\n')
             try:
-                print('\t', self.get('data')[0], '\n')
+                info.append('\t' + str(self.get('data')[0]) + '\n\n')
             except KeyError as e:
-                print('\t', self.get('data'), '\n')
-            print(Bcolors.ENDC)
-            print(f'{Bcolors.OKGREEN}Fields:\n')
+                info.append('\t' + str(self.get('data')) + '\n')
+            info.append(Bcolors.ENDC)
+            info.append(f'{Bcolors.OKGREEN}Fields:\n')
 
             fields_info = []
             for field in self.get('fields'):
@@ -46,13 +47,20 @@ class QBResponse(dict):
 
             # print field info
             for fi in fields_info:
-                print('\t', '{:<16s} {:<32s} {:<16s}'.format(fi[0], fi[1], fi[2]))
-            print(Bcolors.ENDC)
+                info.append('\t' + '{:<16s} {:<32s} {:<16s}\n'.format(fi[0], fi[1], fi[2]))
+            info.append(Bcolors.ENDC)
 
-            print(f'\n{Bcolors.OKCYAN}Metadata:\n')
+            info.append(f'\n{Bcolors.OKCYAN}Metadata:\n')
             for k, v in self.get('metadata').items():
-                print('\t{:<16s} {:<16s}'.format(k, str(v)))
-            print(Bcolors.ENDC)
+                info.append('\t{:<16s} {:<16s}\n'.format(k, str(v)))
+            info.append(Bcolors.ENDC)
+
+            info_str = ''.join(info)
+
+            if prt:
+                print(info_str)
+
+            return info_str
 
     def fields(self, prop):
         """

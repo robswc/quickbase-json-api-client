@@ -1,12 +1,7 @@
-
-
 import pytest
 
-
-
-
 # test where
-from quickbase_json.helpers import Where, IncorrectParameters
+from src.quickbase_json.helpers import Where, IncorrectParameters
 
 
 @pytest.mark.parametrize('fid, operator, value, expected', [
@@ -30,4 +25,3 @@ def test_where_join(fid, operator, value, expected):
 def test_invalid_params():
     with pytest.raises(IncorrectParameters):
         Where(3, 'EX', 12345).build(join='OR')
-
