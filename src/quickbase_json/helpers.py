@@ -103,6 +103,26 @@ class FileUpload(dict):
     Represents a file object for easy upload to quickbase.
     When uploading, set FID to FileUpload directly, bypass {'value': etc}
     """
+
+    def __init__(self, path: str):
+        """
+        :param path: path to file
+        """
+        super().__init__()
+        self.path = path
+
+        with open(path, 'rb') as f:
+            # get file as a b64 string for upload to quickbase
+            file = base64.b64encode(f.read()).decode()
+            self.update({'value': {'fileName': f'{f.name.split("/")[-1]}', 'data': file}})
+
+
+class File(dict):
+    """
+    Represents a file object for easy upload to quickbase.
+    When uploading, set FID to FileUpload directly, bypass {'value': etc}
+    """
+
     def __init__(self, path: str):
         """
         :param path: path to file
