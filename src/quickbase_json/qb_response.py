@@ -1,4 +1,5 @@
 import datetime
+from functools import wraps
 
 
 class Bcolors:
@@ -13,10 +14,20 @@ class Bcolors:
     UNDERLINE = '\033[4m'
 
 
+def operation(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        self.operations.append(method.__name__)
+        return method(self, *args, **kwargs)
+
+    return wrapper
+
+
 class QBResponse(dict):
+
     def __init__(self, response_type, **kwargs):
         self.response_type = response_type
-        self.transformations = {}
+        self.operations = []
         # potential to load sample data for testing
         if kwargs.get('sample_data'):
             self.update(kwargs.get('sample_data'))
@@ -84,6 +95,7 @@ class QBResponse(dict):
         """
         print("\033[91m", 'Relevant Data:\n\n', data, '\n', "\033[0m")
 
+    @operation
     def denest(self):
         """
         Denests data, i.e. if in {'key': {'value': actual_value}} format. -> {'key': actual_value}
@@ -102,8 +114,16 @@ class QBResponse(dict):
                 new_records.update({record: new_record_value})
 
             self.update({'data': new_records})
+
+        if type(data) is list:
+            for d in data:
+                for k, v in d.items():
+                    d.update({k: v.get('value')})
+
+        print('++++', self.data)
         return self
 
+    @operation
     def orient(self, orient, **kwargs):
         """
         Orients the data, given orientation argument.
@@ -125,7 +145,10 @@ class QBResponse(dict):
             records = {}
             try:
                 for i in self.get('data'):
-                    key = i.pop(selector).get('value') if self.get('data') else i.pop(selector)
+                    if 'denest' in self.operations:
+                        key = i.pop(selector)
+                    else:
+                        key = i.pop(selector).get('value')
                     records.update({key: i})
             except KeyError as e:
                 print('KeyError:', e, 'Attempting to use Record ID#')
@@ -182,41 +205,55 @@ class QBResponse(dict):
                 records.append(record)
             self.update({'data': records})
 
-        if transformation == 'datetime':
-            """Finds columns that are of type datetime and converts them into python datetime objects"""
-            # transform fids into labels
+        if transformation == 'intround':
+            """Rounds numbers and transforms them to ints"""
 
             data = self.get('data')
             fields = self.get('fields')
 
             for field in fields:
-                if field.get('type') == 'date time':
+                if field.get('type') == 'numeric':
+
                     if type(self.get('data') == list):
                         for row in data:
-                            dt_field = row.get(str(field.get('id')))
-                            if dt_field.get('value') is None:
-                                str_dt = dt_field
-                                dt = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
-                                row.update({str(field.get('id')): dt})
+                            numeric_field = row.get(str(field.get('id')))
+                            if numeric_field.get('value') is None:
+                                row.update({str(field.get('id')): int(round(numeric_field))})
                             else:
-                                str_dt = dt_field.get('value')
-                                dt = datetime.datetime.strptime(str_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
-                                row.update({str(field.get('id')): {'value': dt}})
+                                numeric_field = numeric_field.get('value')
+                                row.update({str(field.get('id')): {'value': int(round(numeric_field))}})
 
-                if field.get('type') == 'date':
-                    if type(self.get('data') == list):
-                        for row in data:
-                            dt_field = row.get(str(field.get('id')))
-                            if dt_field.get('value') is None:
-                                str_dt = dt_field
-                                dt = datetime.datetime.strptime(str_dt, kwargs.get('datestring'))
-                                row.update({str(field.get('id')): dt})
-                            else:
-                                str_dt = dt_field.get('value')
-                                dt = datetime.datetime.strptime(str_dt, kwargs.get('datestring'))
-                                row.update({str(field.get('id')): {'value': dt}})
+        return self
 
-        if transformation == 'intround':
+    def convert_type(self, field_type, **kwargs):
+        """
+        Converts data of certain field types to standard python objects
+        :param field_type:
+        :param kwargs:
+        :return:
+        """
+
+        def c_datetime():
+
+            for f in self.get('fields'):
+                fid = str(f.get('id'))
+                if f.get('type') == 'date time':
+
+                    if 'denest' in self.operations:
+                        for d in self.get('data'):
+                            print('>>>>>>>>', self.operations, d)
+                            d.update({fid: datetime.datetime.strptime(d.get(fid), '%Y-%m-%dT%H:%M:%S.%fZ')})
+                    else:
+                        for d in self.get('data'):
+                            print('>>>>>>>>', fid, d.get(fid), d)
+                            d.update({fid: {'value': datetime.datetime.strptime(d.get(fid).get('value'), '%Y-%m-%dT%H:%M:%S.%fZ')}})
+
+
+
+        if field_type == 'datetime':
+            c_datetime()
+
+        if field_type == 'intround':
             """Rounds numbers and transforms them to ints"""
 
             data = self.get('data')
