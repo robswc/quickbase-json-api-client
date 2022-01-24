@@ -120,7 +120,6 @@ class QBResponse(dict):
                 for k, v in d.items():
                     d.update({k: v.get('value')})
 
-        print('++++', self.data)
         return self
 
     @operation
@@ -206,22 +205,27 @@ class QBResponse(dict):
             self.update({'data': records})
 
         if transformation == 'intround':
-            """Rounds numbers and transforms them to ints"""
+            raise ValueError('This transformation has been deprecated, please use the "round_ints()" method.')
 
-            data = self.get('data')
-            fields = self.get('fields')
+        return self
 
-            for field in fields:
-                if field.get('type') == 'numeric':
+    def round_ints(self):
+        """
+        Round int fields (remove floating .0 from int fields)
+        :return:
+        """
+        for f in self.get('fields'):
+            fid = str(f.get('id'))
+            if f.get('type') == 'numeric':
 
-                    if type(self.get('data') == list):
-                        for row in data:
-                            numeric_field = row.get(str(field.get('id')))
-                            if numeric_field.get('value') is None:
-                                row.update({str(field.get('id')): int(round(numeric_field))})
-                            else:
-                                numeric_field = numeric_field.get('value')
-                                row.update({str(field.get('id')): {'value': int(round(numeric_field))}})
+                if 'denest' in self.operations:
+                    for d in self.get('data'):
+                        if d.get(fid).is_integer():
+                            d.update({fid: int(round(d.get(fid)))})
+                else:
+                    for d in self.get('data'):
+                        d.update({fid: {
+                            'value': int(round(d.get(fid).get('value')))}})
 
         return self
 
@@ -241,34 +245,13 @@ class QBResponse(dict):
 
                     if 'denest' in self.operations:
                         for d in self.get('data'):
-                            print('>>>>>>>>', self.operations, d)
                             d.update({fid: datetime.datetime.strptime(d.get(fid), '%Y-%m-%dT%H:%M:%S.%fZ')})
                     else:
                         for d in self.get('data'):
-                            print('>>>>>>>>', fid, d.get(fid), d)
-                            d.update({fid: {'value': datetime.datetime.strptime(d.get(fid).get('value'), '%Y-%m-%dT%H:%M:%S.%fZ')}})
-
-
+                            d.update({fid: {
+                                'value': datetime.datetime.strptime(d.get(fid).get('value'), '%Y-%m-%dT%H:%M:%S.%fZ')}})
 
         if field_type == 'datetime':
             c_datetime()
-
-        if field_type == 'intround':
-            """Rounds numbers and transforms them to ints"""
-
-            data = self.get('data')
-            fields = self.get('fields')
-
-            for field in fields:
-                if field.get('type') == 'numeric':
-
-                    if type(self.get('data') == list):
-                        for row in data:
-                            numeric_field = row.get(str(field.get('id')))
-                            if numeric_field.get('value') is None:
-                                row.update({str(field.get('id')): int(round(numeric_field))})
-                            else:
-                                numeric_field = numeric_field.get('value')
-                                row.update({str(field.get('id')): {'value': int(round(numeric_field))}})
 
         return self

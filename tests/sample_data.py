@@ -5,7 +5,7 @@ record_data = {
                 "value": "Andre Harris"
             },
             "7": {
-                "value": 10
+                "value": 10.0
             },
             "8": {
                 "value": "2019-12-18T08:00:00.000Z"

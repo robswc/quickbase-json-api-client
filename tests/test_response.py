@@ -19,7 +19,7 @@ def test_load(data, expected):
 
 # test getting info, basic tests, does not test formatting
 def test_get_info():
-    assert "{'6': {'value': 'Andre Harris'}, '7': {'value': 10}, '8': {'value': '2019-12-18T08:00:00.000Z'}}" in QBResponse(
+    assert "{'6': {'value': 'Andre Harris'}, '7': {'value': 10.0}, '8': {'value': '2019-12-18T08:00:00.000Z'}}" in QBResponse(
         'records', sample_data=sample_data.record_data.copy()).info(prt=False)
 
 
@@ -46,6 +46,17 @@ def test_convert_datetime():
     # make sure both are datetime
     assert isinstance(dt_test, datetime.datetime)
     assert isinstance(dt_test2, datetime.datetime)
+
+
+# test datetime convert
+def test_round_ints():
+    # test converting ints with floating point
+    res = QBResponse('records', sample_data=deepcopy(sample_data.record_data))
+
+    # assert float, then int
+    assert type(res.data()[0].get('7').get('value')) == float
+    res.round_ints()
+    assert type(res.data()[0].get('7').get('value')) == int
 
 
 def test_operations():
