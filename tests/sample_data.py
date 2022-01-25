@@ -61,3 +61,31 @@ record_data_get_info = """
 	skip             0               
 [0m
 """
+
+record_data_currency = {
+    "data": [
+        {
+            "6": {
+                "value": 55.55
+            },
+        },
+        {
+            "6": {
+                "value": 13
+            },
+        }
+    ],
+    "fields": [
+        {
+            "id": 6,
+            "label": "Cost",
+            "type": "numeric currency"
+        }
+    ],
+    "metadata": {
+        "totalRecords": 2,
+        "numRecords": 1,
+        "numFields": 1,
+        "skip": 0
+    }
+}

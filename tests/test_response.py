@@ -48,6 +48,18 @@ def test_convert_datetime():
     assert isinstance(dt_test2, datetime.datetime)
 
 
+# test currency convert
+def test_convert_currency():
+    # test datetime convert w/o denest
+    res = QBResponse('records', sample_data=deepcopy(sample_data.record_data_currency))
+    res.convert_type('numeric currency', fmt='$')
+    res.denest()
+
+    # make sure both are formatted correctly
+    assert res.data()[0].get('6') == '$55.55'
+    assert res.data()[1].get('6') == '$13.00'
+
+
 # test datetime convert
 def test_round_ints():
     # test converting ints with floating point

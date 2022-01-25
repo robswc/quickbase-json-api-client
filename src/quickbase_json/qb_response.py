@@ -238,7 +238,9 @@ class QBResponse(dict):
         """
 
         def c_datetime():
-
+            """
+            Helper function that converts date time QB fields to datetime ojects.
+            """
             for f in self.get('fields'):
                 fid = str(f.get('id'))
                 if f.get('type') == 'date time':
@@ -251,7 +253,24 @@ class QBResponse(dict):
                             d.update({fid: {
                                 'value': datetime.datetime.strptime(d.get(fid).get('value'), '%Y-%m-%dT%H:%M:%S.%fZ')}})
 
+        def c_currency(currency_format):
+
+            for f in self.get('fields'):
+                fid = str(f.get('id'))
+                if f.get('type') == 'numeric currency':
+
+                    if 'denest' in self.operations:
+                        for d in self.get('data'):
+                            fmt = currency_format + "{:,.2f}".format(d.get(fid))
+                            d.update({fid: fmt})
+                    else:
+                        for d in self.get('data'):
+                            fmt = currency_format + "{:,.2f}".format(d.get(fid).get('value'))
+                            d.update({fid: {'value':  fmt}})
+
         if field_type == 'datetime':
             c_datetime()
+        if field_type == 'numeric currency' or field_type == 'currency':
+            c_currency(kwargs.get('fmt'))
 
         return self
