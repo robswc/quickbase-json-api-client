@@ -123,7 +123,7 @@ class QuickbaseJSONClient:
 
         headers = self.headers
         params = {'tableId': f'{table_id}'}
-        return requests.get('https://api.quickbase.com/v1/tables', params=params, headers=headers).json()
+        return requests.get('https://api.quickbase.com/v1/fields', params=params, headers=headers).json()
 
     """
     Misc.
