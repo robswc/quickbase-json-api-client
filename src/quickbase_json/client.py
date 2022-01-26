@@ -108,5 +108,25 @@ class QuickbaseJSONClient:
         body = None
         return requests.post('https://api.quickbase.com/v1/tables', params=params, headers=headers, json=body).json()
 
+    """
+    Fields API
+    """
+
+    def get_fields(self, table_id: str, **kwargs):
+        """
+        Get fields for a given table.
+        https://developer.quickbase.com/operation/getFields
+        :param table_id: Id of quickbase table
+        :param kwargs: optional args
+        :return:
+        """
+
+        headers = self.headers
+        params = {'tableId': f'{table_id}'}
+        return requests.get('https://api.quickbase.com/v1/tables', params=params, headers=headers).json()
+
+    """
+    Misc.
+    """
     def __str__(self):
         return f'Quickbase Client: {self.realm}'

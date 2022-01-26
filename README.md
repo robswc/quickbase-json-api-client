@@ -40,6 +40,10 @@ handling returned data easier.  Here are a few of the most useful ones.
 
 ### Response Methods
 
+- **data()**
+
+Returns the actual data.  Equivalent to calling `.get('data')` 
+
 - **denest()**
 
 Denests the data.  I.e. changes `{'fid': {'value': 'actualValue'}}` to `{'fid': 'actualValue'}`
