@@ -1,3 +1,5 @@
+from xml.etree import ElementTree
+
 import requests
 
 from quickbase_json.qb_response import QBResponse
@@ -124,6 +126,25 @@ class QuickbaseJSONClient:
         headers = self.headers
         params = {'tableId': f'{table_id}'}
         return requests.get('https://api.quickbase.com/v1/fields', params=params, headers=headers).json()
+
+    """
+    User Authentication
+    """
+    def auth_user(self, username, pw, hours):
+        url = f'https://{self.realm}.quickbase.com/db/main?a=API_Authenticate&username={username}&password={pw}&hours={hours}'
+        r = requests.post(url=url)
+
+        tree = ElementTree.fromstring(r.content)
+
+        xml_dict = {}
+        for child in tree:
+            xml_dict.update({child.tag: child.text})
+
+        error_code = int(xml_dict.get('errcode'))
+        if error_code == 0:
+            return xml_dict.get('ticket')
+        else:
+            raise ValueError(f'{xml_dict.get("errcode")}: {xml_dict.get("errtext")}')
 
     """
     Misc.

@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .keys
+.moretests
 .Python
 build/
 develop-eggs/
