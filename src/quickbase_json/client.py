@@ -2,11 +2,13 @@ from xml.etree import ElementTree
 
 import requests
 
+from quickbase_json.helpers import FileUpload
+from quickbase_json.qb_insert_update_response import QBInsertResponse
 from quickbase_json.qb_response import QBResponse
 
 
 class QuickbaseJSONClient:
-    def __init__(self, realm, auth, **kwargs):
+    def __init__(self, realm, auth, debug=False, **kwargs):
         """
         Creates a client object.
         :param realm: quickbase realm
@@ -20,7 +22,7 @@ class QuickbaseJSONClient:
             'User-Agent': '{User-Agent}',
             'Authorization': f'QB-USER-TOKEN {auth}'
         }
-        self.debug = True if kwargs.get('debug') else False
+        self.debug = debug
 
     """
     Records API
@@ -44,13 +46,21 @@ class QuickbaseJSONClient:
 
         # add optional args
         body.update(kwargs)
-        r = requests.post('https://api.quickbase.com/v1/records/query', headers=self.headers, json=body).json()
+        r = requests.post('https://api.quickbase.com/v1/records/query', headers=self.headers, json=body)
+
+        if self.debug:
+            print(f'QJAC : query_records : response ---> {r}')
+            print(f'QJAC : query_records : response.json() ---> \n{r.json()}')
 
         # create response object
         res = QBResponse('records')
 
         # update response object with JSON data from request
-        res.update(r)
+        res.update(r.json())
+
+        if self.debug:
+            print(f'QJAC : query_records : QBResponse ---> \n{res}')
+
         return res
 
     def insert_update_records(self, table: str, data: list):
@@ -63,7 +73,17 @@ class QuickbaseJSONClient:
         """
 
         body = {'to': table, 'data': data}
-        return requests.post('https://api.quickbase.com/v1/records', headers=self.headers, json=body).json()
+
+        if self.debug:
+            print(f'QJAC : insert_update : body ---> \n{body}')
+
+        r = requests.post('https://api.quickbase.com/v1/records', headers=self.headers, json=body)
+
+        res = QBInsertResponse()
+
+
+
+        return
 
     def delete_records(self, table: str, where: str):
         """
@@ -76,7 +96,38 @@ class QuickbaseJSONClient:
 
         headers = self.headers
         body = {'to': table, 'where': where}
+
+        if self.debug:
+            print(f'QJAC : delete_records : body ---> \n{body}')
+
         return requests.delete('https://api.quickbase.com/v1/records', headers=headers, json=body).json()
+
+    """
+    Easy Upload
+    """
+
+    def easy_upload(self, table: str, rid: int, fid: str, file_path: str):
+        """
+        Allows for easy upload of files to quickbase
+        :param table: id of table to upload to
+        :param rid: record id to update
+        :param fid: fid (where to put the file)
+        :param file_path: path to local file to upload
+        :return: request response
+        """
+        file = FileUpload(file_path)
+        data = [
+            {
+                3: rid,
+                fid: file
+            }
+        ]
+
+        if self.debug:
+            print(f'QJAC : easy_upload : file ---> \n{file}')
+            print(f'QJAC : easy_upload : data ---> \n{data}')
+
+        return self.insert_update_records(table, data=data)
 
     """
     Table API
@@ -95,6 +146,10 @@ class QuickbaseJSONClient:
         headers = self.headers
         params = {'appId': f'{app_id}'}
         body = {'name': name}.update(kwargs)
+
+        if self.debug:
+            print(f'QJAC : create_table : body ---> \n{body}')
+
         return requests.post('https://api.quickbase.com/v1/tables', params=params, headers=headers, json=body).json()
 
     def get_tables(self, app_id: str):
@@ -108,6 +163,10 @@ class QuickbaseJSONClient:
         headers = self.headers
         params = {'appId': f'{app_id}'}
         body = None
+
+        if self.debug:
+            print(f'QJAC : get_tables : params ---> \n{params}')
+
         return requests.post('https://api.quickbase.com/v1/tables', params=params, headers=headers, json=body).json()
 
     """
@@ -130,5 +189,11 @@ class QuickbaseJSONClient:
     """
     Misc.
     """
+
     def __str__(self):
-        return f'Quickbase Client: {self.realm}'
+        """
+        Shows a string representation of a QuickbaseJSONClient.
+        :return: client's realm and last 5 of auth
+        """
+        auth_str = ''.join(['*' for _ in range(len(list(self.auth)))] + list(self.auth)[-5:])
+        return f'Quickbase Client\t--->\t{self.realm} : {auth_str} (DEBUG: {self.debug})'
