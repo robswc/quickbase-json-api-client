@@ -1,3 +1,3 @@
-from quickbase_json.client import QuickbaseJSONClient
+from client import QuickbaseJSONClient
 
 QBClient = QuickbaseJSONClient
