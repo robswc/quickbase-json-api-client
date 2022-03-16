@@ -4,7 +4,7 @@ import requests
 
 from quickbase_json.helpers import FileUpload
 from quickbase_json.qb_insert_update_response import QBInsertResponse
-from quickbase_json.qb_response import QBResponse
+from quickbase_json.qb_response import QBResponse, QBQueryResponse
 
 
 class QuickbaseJSONClient:
@@ -53,7 +53,7 @@ class QuickbaseJSONClient:
             print(f'QJAC : query_records : response.json() ---> \n{r.json()}')
 
         # create response object
-        res = QBResponse('records')
+        res = QBQueryResponse(res=r)
 
         # update response object with JSON data from request
         res.update(r.json())

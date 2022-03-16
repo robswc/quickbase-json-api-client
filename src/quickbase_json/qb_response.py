@@ -24,14 +24,22 @@ def operation(method):
 
 
 class QBResponse(dict):
+    def __init__(self, requests_response):
+        super().__init__()
+        self.ok = requests_response.ok
+        self.status_code = requests_response.status_code
+        self.text = requests_response.text
 
-    def __init__(self, response_type, **kwargs):
-        self.response_type = response_type
+
+class QBQueryResponse(QBResponse):
+
+    def __init__(self, res, **kwargs):
+        self.response_type = 'records'
         self.operations = []
         # potential to load sample data for testing
         if kwargs.get('sample_data'):
             self.update(kwargs.get('sample_data'))
-        super().__init__()
+        super().__init__(requests_response=res)
 
     def info(self, prt=True):
         """
@@ -39,8 +47,7 @@ class QBResponse(dict):
         :prt: Set to False to only grab the return as a string.
         """
         if self.response_type == 'records':
-            info = []
-            info.append(f'{Bcolors.OKBLUE}Sample Data:\n')
+            info = [f'{Bcolors.OKBLUE}Sample Data:\n']
             try:
                 info.append('\t' + str(self.get('data')[0]) + '\n\n')
             except KeyError as e:
@@ -266,7 +273,7 @@ class QBResponse(dict):
                     else:
                         for d in self.get('data'):
                             fmt = currency_format + "{:,.2f}".format(d.get(fid).get('value'))
-                            d.update({fid: {'value':  fmt}})
+                            d.update({fid: {'value': fmt}})
 
         if field_type == 'datetime':
             c_datetime()
