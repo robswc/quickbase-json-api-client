@@ -5,7 +5,7 @@ import pytest
 # test where
 import os
 import os
-from quickbase_json.helpers import Where, IncorrectParameters
+from src.quickbase_json.helpers import Where, IncorrectParameters
 
 
 @pytest.mark.parametrize('fid, operator, value, expected', [

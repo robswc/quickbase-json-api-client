@@ -5,7 +5,7 @@ import pytest
 
 # test where
 import os
-from quickbase_json.qb_response import QBQueryResponse
+from src.quickbase_json.qb_response import QBQueryResponse
 from tests import sample_data
 from copy import deepcopy
 
