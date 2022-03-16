@@ -39,7 +39,7 @@ def test_convert_datetime():
     dt_test = res.data()[0].get('8').get('value')
 
     # test datetime convert w/ denest
-    res2 = QBQueryResponse('records', sample_data=deepcopy(sample_data.record_data))
+    res2 = QBQueryResponse(sample_data=deepcopy(sample_data.record_data))
     res2.denest()
     res2.convert_type('datetime')
     dt_test2 = res2.data()[0].get('8')
@@ -52,7 +52,7 @@ def test_convert_datetime():
 # test currency convert
 def test_convert_currency():
     # test datetime convert w/o denest
-    res = QBQueryResponse('records', sample_data=deepcopy(sample_data.record_data_currency))
+    res = QBQueryResponse(sample_data=deepcopy(sample_data.record_data_currency))
     res.convert_type('numeric currency', fmt='$')
     res.denest()
 
@@ -64,7 +64,7 @@ def test_convert_currency():
 # test datetime convert
 def test_round_ints():
     # test converting ints with floating point
-    res = QBQueryResponse('records', sample_data=deepcopy(sample_data.record_data))
+    res = QBQueryResponse(sample_data=deepcopy(sample_data.record_data))
 
     # assert float, then int
     assert type(res.data()[0].get('7').get('value')) == float
@@ -73,9 +73,12 @@ def test_round_ints():
 
 
 def test_operations():
-    res = QBQueryResponse('records', sample_data=sample_data.record_data)
+    res = QBQueryResponse(sample_data=sample_data.record_data)
     assert res.operations == []
     res.denest()
     assert res.operations == ['denest']
     res.orient('records', key=6)
     assert res.operations == ['denest', 'orient']
+
+
+test_convert_datetime()

@@ -2,9 +2,9 @@ from xml.etree import ElementTree
 
 import requests
 
-from quickbase_json.helpers import FileUpload
-from quickbase_json.qb_insert_update_response import QBInsertResponse
-from quickbase_json.qb_response import QBResponse, QBQueryResponse
+from src.quickbase_json.helpers import FileUpload
+from src.quickbase_json.qb_insert_update_response import QBInsertResponse
+from src.quickbase_json.qb_response import QBQueryResponse
 
 
 class QuickbaseJSONClient:
