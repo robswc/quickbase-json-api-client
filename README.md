@@ -38,6 +38,7 @@ using the following code
 
 ```python
 response = client.query_records(table='tableId', select=[3, 6, 12], query='queryString')
+data = response.data()
 ```
 
 Where `tableId` is the ID of the table you wish to query from, `fids` is a list of field IDs you wish to receive and `queryString`
