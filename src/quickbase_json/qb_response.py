@@ -24,16 +24,17 @@ def operation(method):
 
 
 class QBResponse(dict):
-    def __init__(self, requests_response):
+    def __init__(self, requests_response=None, **kwargs):
         super().__init__()
-        self.ok = requests_response.ok
-        self.status_code = requests_response.status_code
-        self.text = requests_response.text
+        if requests_response:
+            self.ok = requests_response.ok
+            self.status_code = requests_response.status_code
+            self.text = requests_response.text
 
 
 class QBQueryResponse(QBResponse):
 
-    def __init__(self, res, **kwargs):
+    def __init__(self, res=None, **kwargs):
         self.response_type = 'records'
         self.operations = []
         # potential to load sample data for testing
