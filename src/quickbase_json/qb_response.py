@@ -42,6 +42,13 @@ class QBQueryResponse(QBResponse):
             self.update(kwargs.get('sample_data'))
         super().__init__(requests_response=res)
 
+    def is_empty(self):
+        """
+        Tests if data is empty, return True if so.
+        :return: boolean
+        """
+        return self.get('data', False)
+
     def info(self, prt=True):
         """
         Prints information about the response.

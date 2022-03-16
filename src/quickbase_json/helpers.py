@@ -17,7 +17,13 @@ class QuickbaseParameter:
     def build(self):
         return 'Default String'
 
+    def to_json(self):
+        return self.build()
+
     def __str__(self):
+        return self.build()
+
+    def __repr__(self):
         return self.build()
 
 
