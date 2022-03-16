@@ -1,5 +1,7 @@
 # quickbase-json-api-client
 
+![logo_1x](https://user-images.githubusercontent.com/38849824/158674431-03b257ec-fa17-49bd-ac35-8c94e95f28f3.png)
+
 ![build](https://img.shields.io/github/workflow/status/robswc/quickbase-json-api-client/Python%20application?style=for-the-badge)
 ![size](https://img.shields.io/github/languages/code-size/robswc/quickbase-json-api-client?style=for-the-badge)
 ![license](https://img.shields.io/github/license/robswc/quickbase-json-api-client?style=for-the-badge)
