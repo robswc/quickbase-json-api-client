@@ -11,7 +11,11 @@ Makes life a little easier!
 # Quickstart
 
 ## Installation
-To install, run `pip install quickbase-json-api-client`
+To install, run:
+
+```shell
+pip install quickbase-json-api-client
+```
 
 ## Initialize Client
 Use the following code to create and initialize a client object. 
