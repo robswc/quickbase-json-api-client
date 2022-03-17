@@ -118,7 +118,7 @@ Rounds all float integers into whole number ints.  i.e. converts `55.0` to `55`.
 
 Information on additional features that go beyond the scope of an introduction README.md, can be found on the [GitHub Wiki](https://github.com/robswc/quickbase-json-api-client/wiki)!
 
-There include things like...
+This include things like...
 
 - Easy File uploading
 - Inserting, Updating and Deleting records
