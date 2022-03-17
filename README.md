@@ -6,9 +6,7 @@
 ![size](https://img.shields.io/github/languages/code-size/robswc/quickbase-json-api-client?style=for-the-badge)
 ![license](https://img.shields.io/github/license/robswc/quickbase-json-api-client?style=for-the-badge)
 
-Unofficial Quickbase JSON API wrapper for python
-
-Makes life a little easier!
+Unofficial QuickBase JSON API wrapper for Python.
 
 # Quickstart
 
