@@ -114,3 +114,20 @@ r = qbc.query_records(...).round_ints()
 
 Rounds all float integers into whole number ints.  i.e. converts `55.0` to `55`.
 
+# Additional Features
+
+Information on additional features that go beyond the scope of an introduction README.md, can be found on the [GitHub Wiki](https://github.com/robswc/quickbase-json-api-client/wiki)!
+
+There include things like...
+
+- Easy File uploading
+- Inserting, Updating and Deleting records
+- Creating tables
+- Authenticating w/Quickbase
+- etc.
+
+# Issues/Bugs
+
+If you come across any issues or want to file a bug report, please do so [here](https://github.com/robswc/quickbase-json-api-client/issues).
+
+Thanks!
