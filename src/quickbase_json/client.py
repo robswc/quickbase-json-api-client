@@ -125,7 +125,6 @@ class QuickbaseJSONClient:
 
         if self.debug:
             print(f'QJAC : easy_upload : file ---> \n{file}')
-            print(f'QJAC : easy_upload : data ---> \n{data}')
 
         return self.insert_update_records(table, data=data)
 

@@ -5,8 +5,9 @@ import pytest
 # test where
 import os
 import os
-from src.quickbase_json.helpers import Where, IncorrectParameters
+from src.quickbase_json.helpers import Where, IncorrectParameters, FileUpload
 
+print(os.getcwd())
 
 @pytest.mark.parametrize('fid, operator, value, expected', [
     (3, 'EX', 12345, '{3.EX.12345}'),
@@ -29,3 +30,9 @@ def test_where_join(fid, operator, value, expected):
 def test_invalid_params():
     with pytest.raises(IncorrectParameters):
         Where(3, 'EX', 12345).build(join='OR')
+
+
+# test file helper
+def test_file_upload():
+    result = open('tests/test_assets/fileupload_result.txt', 'r').readline()
+    assert str(FileUpload(path='tests/test_assets/140.jpeg')) == str(result)

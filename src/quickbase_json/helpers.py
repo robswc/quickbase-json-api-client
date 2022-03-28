@@ -108,10 +108,12 @@ class FileUpload(dict):
     """
     Represents a file object for easy upload to quickbase.
     When uploading, set FID to FileUpload directly, bypass {'value': etc}
+    Rather: {'16': FileUpload(...)}.
     """
 
     def __init__(self, path: str):
         """
+        Initialize file upload helper
         :param path: path to file
         """
         super().__init__()
@@ -123,14 +125,16 @@ class FileUpload(dict):
             self.update({'value': {'fileName': f'{f.name.split("/")[-1]}', 'data': file}})
 
 
-class File(dict):
+class FileDownload(dict):
     """
     Represents a file object for easy upload to quickbase.
     When uploading, set FID to FileUpload directly, bypass {'value': etc}
+    Rather: {'16': FileUpload(...)}.
     """
 
     def __init__(self, path: str):
         """
+        Initialize file upload helper
         :param path: path to file
         """
         super().__init__()
