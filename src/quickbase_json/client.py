@@ -79,11 +79,9 @@ class QuickbaseJSONClient:
 
         r = requests.post('https://api.quickbase.com/v1/records', headers=self.headers, json=body)
 
-        res = QBInsertResponse()
+        res = QBInsertResponse().update(r)
 
-
-
-        return
+        return res
 
     def delete_records(self, table: str, where: str):
         """
