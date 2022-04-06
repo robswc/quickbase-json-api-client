@@ -2,7 +2,7 @@ from xml.etree import ElementTree
 
 import requests
 
-from src.quickbase_json.helpers import FileUpload
+from src.quickbase_json.helpers import FileUpload, Where
 from src.quickbase_json.qb_insert_update_response import QBInsertResponse
 from src.quickbase_json.qb_response import QBQueryResponse
 
@@ -28,7 +28,7 @@ class QuickbaseJSONClient:
     Records API
     """
 
-    def query_records(self, table: str, select: list, where: str, **kwargs):
+    def query_records(self, table: str, select: list, where: any, **kwargs):
         """
         Queries for record data.
         https://developer.quickbase.com/operation/runQuery
@@ -38,6 +38,19 @@ class QuickbaseJSONClient:
         :param kwargs: optional request parameters.
         :return: json data of records {data: ..., fields: ...}
         """
+
+        # convert if using 'Where' helper.
+        if isinstance(where, Where):
+            where = where.build()
+
+        if kwargs.pop('_test_'):
+            return {'from': table, 'select': select, 'where': where}
+
+        if table == '':
+            raise ValueError('Table cannot be blank')
+
+        if not select:
+            raise ValueError('Selection must contain at least one <int>')
 
         # create request body
         body = {'from': table, 'select': select, 'where': where}

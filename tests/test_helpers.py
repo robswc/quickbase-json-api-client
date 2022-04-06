@@ -5,9 +5,12 @@ import pytest
 # test where
 import os
 import os
+
+from src.quickbase_json import QBClient
 from src.quickbase_json.helpers import Where, IncorrectParameters, FileUpload
 
 print(os.getcwd())
+
 
 @pytest.mark.parametrize('fid, operator, value, expected', [
     (3, 'EX', 12345, '{3.EX.12345}'),
@@ -36,3 +39,10 @@ def test_invalid_params():
 def test_file_upload():
     result = open('tests/test_assets/fileupload_result.txt', 'r').readline()
     assert str(FileUpload(path='tests/test_assets/140.jpeg')) == str(result)
+
+
+# test where being properly converted during use in Query
+def test_where_in_query():
+    qbc = QBClient(realm='', auth='')
+    q = qbc.query_records(table='', select=[], where=Where(3, 'EX', 1337), _test_=True)
+    assert str(q) == "{'from': '', 'select': [], 'where': '{3.EX.1337}'}"
