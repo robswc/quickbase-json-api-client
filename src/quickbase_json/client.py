@@ -43,7 +43,7 @@ class QuickbaseJSONClient:
         if isinstance(where, Where):
             where = where.build()
 
-        if kwargs.pop('_test_'):
+        if kwargs.get('_test_', None):
             return {'from': table, 'select': select, 'where': where}
 
         if table == '':
