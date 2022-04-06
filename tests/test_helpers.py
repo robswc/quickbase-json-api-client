@@ -6,8 +6,8 @@ import pytest
 import os
 import os
 
-from src.quickbase_json import QBClient
-from src.quickbase_json.helpers import Where, IncorrectParameters, FileUpload
+from quickbase_json import QBClient
+from quickbase_json.helpers import Where, IncorrectParameters, FileUpload
 
 print(os.getcwd())
 
@@ -45,4 +45,6 @@ def test_file_upload():
 def test_where_in_query():
     qbc = QBClient(realm='', auth='')
     q = qbc.query_records(table='', select=[], where=Where(3, 'EX', 1337), _test_=True)
+    print(q)
+    print("{'from': '', 'select': [], 'where': '{3.EX.1337}'}")
     assert str(q) == "{'from': '', 'select': [], 'where': '{3.EX.1337}'}"
