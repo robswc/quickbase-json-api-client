@@ -125,22 +125,20 @@ class FileUpload(dict):
             self.update({'value': {'fileName': f'{f.name.split("/")[-1]}', 'data': file}})
 
 
-class FileDownload(dict):
+class QBFile:
     """
-    Represents a file object for easy upload to quickbase.
-    When uploading, set FID to FileUpload directly, bypass {'value': etc}
-    Rather: {'16': FileUpload(...)}.
+    Represents a file, preparing to upload to QB
     """
 
-    def __init__(self, path: str):
+    def __init__(self, content):
         """
         Initialize file upload helper
         :param path: path to file
         """
         super().__init__()
-        self.path = path
+        self.content = base64.b64decode(content, validate=True)
 
-        with open(path, 'rb') as f:
-            # get file as a b64 string for upload to quickbase
-            file = base64.b64encode(f.read()).decode()
-            self.update({'value': {'fileName': f'{f.name.split("/")[-1]}', 'data': file}})
+    def save(self, path: str):
+        f = open(f'{path}', 'wb')
+        f.write(self.content)
+        f.close()

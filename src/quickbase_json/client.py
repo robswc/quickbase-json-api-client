@@ -2,7 +2,7 @@ from xml.etree import ElementTree
 
 import requests
 
-from quickbase_json.helpers import FileUpload, Where
+from quickbase_json.helpers import FileUpload, Where, QBFile
 from quickbase_json.qb_insert_update_response import QBInsertResponse
 from quickbase_json.qb_response import QBQueryResponse
 
@@ -195,6 +195,19 @@ class QuickbaseJSONClient:
         headers = self.headers
         params = {'tableId': f'{table_id}'}
         return requests.get('https://api.quickbase.com/v1/fields', params=params, headers=headers).json()
+
+    """
+    Operations
+    """
+
+    def download_file(self, table: str, rid: int, fid: int, version: int):
+        url = f'https://api.quickbase.com/v1/files/{table}/{rid}/{fid}/{version}'
+        r = requests.get(url=url, headers=self.headers)
+        if r.ok and r.status_code == 200:
+            return QBFile(content=r.text)
+        else:
+            raise ConnectionError(r.status_code)
+
 
     """
     Misc.
