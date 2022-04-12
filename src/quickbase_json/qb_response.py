@@ -44,7 +44,7 @@ class QBQueryResponse(QBResponse):
 
     def is_empty(self):
         """
-        Tests if data is empty, return True if so.
+        Tests if data is empty or otherwise can't be accessed.
         :return: boolean
         """
         return self.get('data', False)
@@ -101,9 +101,10 @@ class QBQueryResponse(QBResponse):
         Gets data, shorthand for .get('data')
         :return: data
         """
-        return self.get('data')
+        return self.get('data', False)
 
-    def prd(self, data):
+    @staticmethod
+    def prd(data):
         """
         Print relevant data, simple print function.
         :param data: data to print
