@@ -1,4 +1,7 @@
 import base64
+import re
+
+import requests
 
 
 class IncorrectParameters(Exception):
@@ -125,20 +128,77 @@ class FileUpload(dict):
             self.update({'value': {'fileName': f'{f.name.split("/")[-1]}', 'data': file}})
 
 
-class QBFile:
+class QBFile(dict):
     """
     Represents a file, preparing to upload to QB
     """
 
-    def __init__(self, content):
+    def __init__(self):
         """
         Initialize file upload helper
-        :param path: path to file
         """
         super().__init__()
-        self.content = base64.b64decode(content, validate=True)
+        self.name = None
+        self.content = None
+        self.path = None
+        self.qb_data = {}
+
+    def __str__(self):
+        if self.content is None:
+            return f'QBFile: File content is empty! (populate content from local file or quickbase)'
+        if self.path:
+            return f'QBFile: "{self.name}"\tlocal path -> "{self.path}"'
+        if self.path:
+            return f'QBFile: "{self.name}" -> "{self.qb_data.get("url", None)}"'
+        return f'QBFile'
+
+    def from_local(self, path: str):
+        with open(path, 'rb') as f:
+            # get file as a b64 string for upload to quickbase
+            file = base64.b64encode(f.read()).decode()
+            self.name = path.split('/')[-1]
+            self.content = file
+            self.path = path
+            self.update({'value': {'fileName': f'{f.name.split("/")[-1]}', 'data': file}})
+
+        return self
+
+    def from_quickbase(self, client: any, table: str, rid: int, fid: int, version: int):
+        """
+        Builds QBFile from quickbase
+        :param client: QBClient object
+        :param table: table of file
+        :param rid: record id
+        :param fid: field id
+        :param version: file version
+        :return: QBFile()
+        """
+        url = f'https://api.quickbase.com/v1/files/{table}/{rid}/{fid}/{version}'
+        r = requests.get(url=url, headers=client.headers)
+        file_name = r.headers.get('content-disposition').split("''")[1]
+        cleaned_file_name = re.sub('[^a-zA-Z0-9 \n\.]', '_', file_name)
+
+        if r.ok and r.status_code == 200:
+            self.name = cleaned_file_name
+            self.content = r.text
+            self.qb_data = locals()
+
+        else:
+            raise ConnectionError(f'{r.status_code}: {r.text}')
+
+        return self
+
+    def upload(self, client: any, table: str, rid: int, fid: int, version: int):
+        pass
 
     def save(self, path: str):
+        """
+        Saves file content to file on disk
+        :param path: save path
+        """
+        if self.content is None:
+            raise ValueError('QB File has no content to save.')
+
         f = open(f'{path}', 'wb')
-        f.write(self.content)
+        f.write(base64.b64decode(self.content, validate=True))
         f.close()

@@ -206,8 +206,7 @@ class QuickbaseJSONClient:
         if r.ok and r.status_code == 200:
             return QBFile(content=r.text)
         else:
-            raise ConnectionError(r.status_code)
-
+            raise ConnectionError(f'{r.status_code}: {r.text} (This can sometimes happen with a bad file version)')
 
     """
     Misc.
