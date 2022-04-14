@@ -92,7 +92,7 @@ class QuickbaseJSONClient:
 
         r = requests.post('https://api.quickbase.com/v1/records', headers=self.headers, json=body)
 
-        res = QBInsertResponse().update(r)
+        res = QBInsertResponse().from_response(response=r)
 
         return res
 

@@ -27,7 +27,7 @@ class QBInsertResponse(dict):
 
     def __init__(self, **kwargs):
         self.ok = False
-        self.status = None
+        self.status_code = None
         self.processed = 0
         self.created_rids = []
         self.updated_rids = []
@@ -38,14 +38,17 @@ class QBInsertResponse(dict):
         Prints information about the response.
         :prt: Set to False to only grab the return as a string.
         """
-        print(f'Response:\nOK:\t--->\t{self.ok}\nChanged:\t--->\t{len(self.updated_rids)}\nInserted:\t--->\t{len(self.created_rids)}')
+        print(
+            f'Response:\nOK:\t--->\t{self.ok}\nChanged:\t--->\t{len(self.updated_rids)}\nInserted:\t--->\t{len(self.created_rids)}')
 
     def from_response(self, response):
         self.ok = response.ok
-        self.status = response.status
+        self.status_code = response.status_code
+        self.update(response.json())
 
         if self.ok:
-            self.update(response.json())
             self.created_rids = self.get('metadata').get('createdRecordIds')
             self.updated_rids = self.get('metadata').get('updatedRecordIds')
             self.processed = self.get('metadata').get('totalNumberOfRecordsProcessed')
+
+        return self
