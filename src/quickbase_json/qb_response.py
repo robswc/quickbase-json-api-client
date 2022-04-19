@@ -25,6 +25,7 @@ def operation(method):
 
 class QBResponse(dict):
     def __init__(self, requests_response=None, **kwargs):
+        self.ok = False
         if requests_response:
             self.ok = requests_response.ok
             self.status_code = requests_response.status_code
