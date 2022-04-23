@@ -29,6 +29,11 @@ def test_where_join(fid, operator, value, expected):
     assert Where(fid, operator, value).build(join='OR') == expected
 
 
+def test_where_valid_operators():
+    with pytest.raises(ValueError) as e_info:
+        Where(3, 'EXX', 12345).build()
+
+
 # test invalid parameters, given to where
 def test_invalid_params():
     with pytest.raises(IncorrectParameters):

@@ -25,12 +25,12 @@ def operation(method):
 
 class QBResponse(dict):
     def __init__(self, requests_response=None, **kwargs):
+        super().__init__()
         self.ok = False
         if requests_response:
             self.ok = requests_response.ok
             self.status_code = requests_response.status_code
             self.text = requests_response.text
-        super().__init__()
 
 
 class QBQueryResponse(QBResponse):
