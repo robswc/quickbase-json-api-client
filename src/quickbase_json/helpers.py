@@ -3,6 +3,29 @@ import re
 
 import requests
 
+VALID_OPERATORS = [
+    'CT',
+    'XCT',
+    'HAS',
+    'XHAS',
+    'EX',
+    'TV',
+    'XTV',
+    'XEX',
+    'SW',
+    'XSW',
+    'BF',
+    'OBF',
+    'AF',
+    'OAF',
+    'IR',
+    'XIR',
+    'LT',
+    'LTE',
+    'GT',
+    'GTE'
+]
+
 
 class IncorrectParameters(Exception):
     def __init__(self, value, expected):
@@ -40,8 +63,11 @@ class Where(QuickbaseParameter):
         :param kwargs:
         """
         self.fid = fid
-        self.operator = operator
+        self.operator = operator.upper()
         self.value = value
+
+        if self.operator.upper() not in VALID_OPERATORS:
+            raise ValueError(f'"{self.operator}" is not a valid operator for QuickBase query!')
 
         # add quotes for strings
         if isinstance(self.value, str):
@@ -176,7 +202,7 @@ class QBFile(dict):
         url = f'https://api.quickbase.com/v1/files/{table}/{rid}/{fid}/{version}'
         r = requests.get(url=url, headers=client.headers)
         file_name = r.headers.get('content-disposition').split("''")[1]
-        cleaned_file_name = re.sub('[^a-zA-Z0-9 \n\.]', '_', file_name)
+        cleaned_file_name = re.sub('[^a-zA-Z0-9 \n]', '_', file_name)
 
         if r.ok and r.status_code == 200:
             self.name = cleaned_file_name

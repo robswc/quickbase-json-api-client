@@ -26,6 +26,7 @@ def operation(method):
 class QBResponse(dict):
     def __init__(self, requests_response=None, **kwargs):
         super().__init__()
+        self.ok = False
         if requests_response:
             self.ok = requests_response.ok
             self.status_code = requests_response.status_code
@@ -35,12 +36,12 @@ class QBResponse(dict):
 class QBQueryResponse(QBResponse):
 
     def __init__(self, res=None, **kwargs):
+        super().__init__(requests_response=res)
         self.response_type = 'records'
         self.operations = []
         # potential to load sample data for testing
         if kwargs.get('sample_data'):
             self.update(kwargs.get('sample_data'))
-        super().__init__(requests_response=res)
 
     def is_empty(self):
         """
