@@ -36,14 +36,19 @@ class QBResponse(dict):
 class QBQueryResponse(QBResponse):
 
     def __init__(self, res=None, **kwargs):
-        self.ok = res.ok
-        self.status_code = res.status_code
-        self.text = res.text
-        self.response_type = 'records'
-        self.operations = []
         # potential to load sample data for testing
         if kwargs.get('sample_data'):
             self.update(kwargs.get('sample_data'))
+            self.ok = True
+
+        # load response data
+        if res:
+            self.ok = res.ok
+            self.status_code = res.status_code
+            self.text = res.text
+
+        self.response_type = 'records'
+        self.operations = []
         super().__init__(requests_response=res)
 
     def is_empty(self):
