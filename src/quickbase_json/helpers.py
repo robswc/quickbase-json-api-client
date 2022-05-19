@@ -228,3 +228,22 @@ class QBFile(dict):
         f = open(f'{path}', 'wb')
         f.write(base64.b64decode(self.content, validate=True))
         f.close()
+
+
+def xml_upload(table_id: str, rid: int, fid: int):
+    """
+    Fallback to XML uploading for larger files.
+    :param table_id: table id
+    :param rid: record id
+    :param fid: field id
+    :return: error code
+    """
+    with open('xmlstuff.xml') as xml:
+        new_file_b64 = open('287.jpeg', 'rb')
+        xml = xml.read().replace('{{base64}}', base64.b64encode(new_file_b64.read()).decode())
+        print(xml)
+
+        r = requests.post(url='https://synctivate.quickbase.com/db/bqs5cbduv', headers=headers, data=xml)
+
+    print(r)
+    print(r.text)
