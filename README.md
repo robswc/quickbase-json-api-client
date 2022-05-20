@@ -35,7 +35,7 @@ using the following code
 #### Basic Example
 
 ```python
-response = client.query_records(table='tableId', select=[3, 6, 12], query='queryString')
+response = client.query_records(table='tableId', select=[3, 6, 12], where='queryString')
 data = response.data()
 ```
 
@@ -52,7 +52,7 @@ NEEDED_FIDS = [3, 6, 12]
 # build query str where 3 is either 130, 131 or 132
 # https://help.quickbase.com/api-guide/componentsquery.html
 q_str = Where(3, 'EX', [130, 131, 132]).build(join='OR') 
-response = client.query_records(table='tableId', select=NEEDED_FIDS, query=q_str)
+response = client.query_records(table='tableId', select=NEEDED_FIDS, where=q_str)
 ```
 
 In this example, we use the `Where()` helper.  This can make building complex [QuickBase queries](https://help.quickbase.com/api-guide/componentsquery.html) easier.
