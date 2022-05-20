@@ -295,13 +295,17 @@ def xml_upload(client, tbid, rid: int, fid: int, file: any, filename: str) -> QB
     response_fo = io.StringIO(r.text)
 
     # set response info, based on response xml
-    tree = ET.parse(response_fo)
     res = QBResponse()
-    res.status_code = tree.getroot().find('./errcode').text
-    res.text = tree.getroot().find('./errtext').text
-    if res.status_code == 0:
-        res.ok = True
-    else:
-        res.ok = False
+    try:
+        tree = ET.parse(response_fo)
+        res.status_code = int(tree.getroot().find('./errcode').text)
+        res.text = tree.getroot().find('./errtext').text
+        if res.status_code == 0:
+            res.ok = True
+        else:
+            res.ok = False
 
-    return res
+        return res
+    except Exception as e:
+        res.ok = False
+        res.text = str(e)
