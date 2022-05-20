@@ -118,7 +118,7 @@ Information on additional features that go beyond the scope of an introduction R
 
 This include things like...
 
-- Easy File uploading
+- [Easy file uploading/downloading](https://github.com/robswc/quickbase-json-api-client/wiki/FileUpload)
 - Inserting, Updating and Deleting records
 - Creating tables
 - Authenticating w/Quickbase
