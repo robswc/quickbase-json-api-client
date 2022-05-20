@@ -11,7 +11,7 @@ class AuthResponse:
         else:
             self.ok = False
         self.error_code = error_code
-        self.error = errorBQUERY
+        self.error = error
 
     def __str__(self):
         return f'{self.error_code}: {self.error}'
