@@ -7,9 +7,10 @@ import os
 import os
 
 from quickbase_json import QBClient
-from quickbase_json.helpers import Where, IncorrectParameters, FileUpload
+from quickbase_json.helpers import Where, IncorrectParameters, FileUpload, xml_upload
 
 print(os.getcwd())
+empty_qbc = QBClient(realm='', auth='')
 
 
 @pytest.mark.parametrize('fid, operator, value, expected', [
@@ -53,3 +54,11 @@ def test_where_in_query():
     print(q)
     print("{'from': '', 'select': [], 'where': '{3.EX.1337}'}")
     assert str(q) == "{'from': '', 'select': [], 'where': '{3.EX.1337}'}"
+
+
+def test_xml_uploader_typing():
+    with pytest.raises(TypeError) as e_binary:
+        xml_upload(empty_qbc, tbid='', rid=1, fid=1, file=open('tests/test_assets/140.jpeg', 'r'), filename='test')
+    with pytest.raises(TypeError) as e_buffered:
+        xml_upload(empty_qbc, tbid='', rid=1, fid=1, file='testfile', filename='test')
+

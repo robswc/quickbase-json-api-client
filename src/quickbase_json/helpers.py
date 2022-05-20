@@ -1,7 +1,14 @@
 import base64
+import io
 import re
+from typing import BinaryIO
+from xml.dom import minidom
+import xml.etree.ElementTree as ET
 
 import requests
+
+from quickbase_json import wiki
+from quickbase_json.qb_response import QBResponse
 
 VALID_OPERATORS = [
     'CT',
@@ -230,20 +237,71 @@ class QBFile(dict):
         f.close()
 
 
-def xml_upload(table_id: str, rid: int, fid: int):
+def xml_upload(client, tbid, rid: int, fid: int, file: any, filename: str) -> QBResponse:
     """
-    Fallback to XML uploading for larger files.
-    :param table_id: table id
+    Fallback upload option to support uploading files that are larger than ~10 MB (the JSON API payload size limit)
+    :param client: valid QBClient object
+    :param tbid: table id
     :param rid: record id
     :param fid: field id
-    :return: error code
+    :param file: file object, must be bytes!
+    :param filename: filename to save as on quickbase
+    :return: QBResponse object
     """
-    with open('xmlstuff.xml') as xml:
-        new_file_b64 = open('287.jpeg', 'rb')
-        xml = xml.read().replace('{{base64}}', base64.b64encode(new_file_b64.read()).decode())
-        print(xml)
 
-        r = requests.post(url='https://synctivate.quickbase.com/db/bqs5cbduv', headers=headers, data=xml)
+    # check file type
+    acceptable_types = (BinaryIO, io.BytesIO, io.BufferedReader)
+    if not isinstance(file, acceptable_types):
+        raise TypeError(
+            f'File must be of type: {", ".join([str(i) for i in acceptable_types])}{wiki.msg("xml-upload")}')
 
-    print(r)
-    print(r.text)
+    headers = {
+        'Content-Type': 'application/xml',
+        'QUICKBASE-ACTION': 'API_UploadFile'
+    }
+
+    # convert file
+    file = base64.b64encode(file.read()).decode()
+
+    # begin building of XML
+    root = minidom.Document()
+    xml = root.createElement('qdbapi')
+    root.appendChild(xml)
+
+    # user token
+    user_token = root.createElement('usertoken')
+    user_token_value = root.createTextNode(client.auth)
+    user_token.appendChild(user_token_value)
+    xml.appendChild(user_token)
+
+    # rid
+    rid_node = root.createElement('rid')
+    rid_value = root.createTextNode(str(rid))
+    rid_node.appendChild(rid_value)
+    xml.appendChild(rid_node)
+
+    # field
+    fid_node = root.createElement('field')
+    fid_node.setAttribute('fid', str(fid))
+    fid_node.setAttribute('filename', str(filename))
+    fid_value = root.createTextNode(file)
+    fid_node.appendChild(fid_value)
+    xml.appendChild(fid_node)
+
+    # useful for debugging
+    # xml_str = root.toprettyxml(indent="\t")
+
+    r = requests.post(url=f'https://synctivate.quickbase.com/db/{tbid}', headers=headers, data=xml.toxml())
+    response_fo = io.StringIO(r.text)
+
+    # set response info, based on response xml
+    tree = ET.parse(response_fo)
+    res = QBResponse()
+    res.status_code = tree.getroot().find('./errcode').text
+    res.text = tree.getroot().find('./errtext').text
+    if res.status_code == 0:
+        res.ok = True
+    else:
+        res.ok = False
+
+    return res
