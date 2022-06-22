@@ -235,7 +235,6 @@ class QuickbaseJSONClient:
         return return_list
 
 
-
     def __str__(self):
         """
         Shows a string representation of a QuickbaseJSONClient.

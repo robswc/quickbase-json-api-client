@@ -312,6 +312,9 @@ def xml_upload(client, tbid, rid: int, fid: int, file: any, filename: str) -> QB
 
 
 def split_list_into_chunks(array: list, chunk_size: int):
+    """
+        splits a list into a list of lists of specified chunk size
+    """
     return_array = []
 
     for i in range(0, len(array), chunk_size):
