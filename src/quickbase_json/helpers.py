@@ -309,3 +309,15 @@ def xml_upload(client, tbid, rid: int, fid: int, file: any, filename: str) -> QB
     except Exception as e:
         res.ok = False
         res.text = str(e)
+
+
+def split_list_into_chunks(array: list, chunk_size: int):
+    return_array = []
+
+    for i in range(0, len(array), chunk_size):
+        chunk = array[i:i + chunk_size]
+        return_array.append(chunk)
+
+    return return_array
+
+

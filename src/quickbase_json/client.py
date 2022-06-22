@@ -2,7 +2,7 @@ from xml.etree import ElementTree
 
 import requests
 
-from quickbase_json.helpers import FileUpload, Where, QBFile
+from quickbase_json.helpers import FileUpload, Where, QBFile, split_list_into_chunks
 from quickbase_json.qb_insert_update_response import QBInsertResponse
 from quickbase_json.qb_response import QBQueryResponse
 
@@ -211,6 +211,30 @@ class QuickbaseJSONClient:
     """
     Misc.
     """
+
+    def multi_query_records(self, table: str, search_field: int, select: list, search_list: list):
+        """
+        Queries for record data.
+        https://developer.quickbase.com/operation/runQuery
+        :param table: quickbase table
+        :param search_field: int, fid of field to search
+        :param select: list, list of FIDs to return for found records
+        :param search_list: list of values to search for
+        :return: list of values
+        """
+        return_list = []
+        list_of_searches = split_list_into_chunks(array=search_list, chunk_size=100)
+        for list_of_100 in list_of_searches:
+            query = Where(fid=search_field, operator='EX', value=list_of_100).build(join='OR')
+            r = self.query_records(table=table, select=select, where=query)
+            values = r['data']
+            if r.ok and r.status_code == 200:
+                return_list.extend(values)
+            else:
+                raise ConnectionError(f'{r.status_code}: {r.text}')
+        return return_list
+
+
 
     def __str__(self):
         """
