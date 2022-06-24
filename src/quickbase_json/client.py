@@ -215,7 +215,7 @@ class QuickbaseJSONClient:
     def get_choices(self, table: str, fid: int):
         """
         Get choices for a given multiple choice field
-        https://developer.quickbase.com/operation/getChoices
+        https://developer.quickbase.com/operation/getField
         :param table: table id
         :param fid: fid of field to get choices from
         :return: list of choices from multiple choice field
