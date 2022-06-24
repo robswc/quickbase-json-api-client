@@ -220,19 +220,24 @@ class QuickbaseJSONClient:
         :param search_field: int, fid of field to search
         :param select: list, list of FIDs to return for found records
         :param search_list: list of values to search for
-        :return: list of values
+        :return: json data of records {data: ..., fields: ...}
         """
-        return_list = []
-        list_of_searches = split_list_into_chunks(array=search_list, chunk_size=100)
+        response_for_return = {'data': [], 'fields': [],
+                               'metadata': {'numFields': 0, 'numRecords': 0, 'skip': 0, 'totalRecords': 0}}
+        list_of_searches = split_list_into_chunks(array=search_list, chunk_size=10)
         for list_of_100 in list_of_searches:
             query = Where(fid=search_field, operator='EX', value=list_of_100).build(join='OR')
             r = self.query_records(table=table, select=select, where=query)
-            values = r['data']
             if r.ok and r.status_code == 200:
-                return_list.extend(values)
+                response_for_return['data'].extend(r['data'])
+                response_for_return['fields'] = r['fields']
+                response_for_return['metadata']['numFields'] = r['metadata']['numFields']
+                response_for_return['metadata']['numRecords'] += r['metadata']['numRecords']
+                response_for_return['metadata']['skip'] += r['metadata']['skip']
+                response_for_return['metadata']['totalRecords'] += r['metadata']['totalRecords']
             else:
                 raise ConnectionError(f'{r.status_code}: {r.text}')
-        return return_list
+        return response_for_return
 
 
     def __str__(self):
