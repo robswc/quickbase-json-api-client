@@ -216,7 +216,7 @@ class QuickbaseJSONClient:
         """
         Get choices for a given multiple choice field
         https://developer.quickbase.com/operation/getChoices
-        :param table: table to get choices from
+        :param table: table id
         :param fid: fid of field to get choices from
         :return: list of choices from multiple choice field
         """
