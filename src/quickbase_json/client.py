@@ -2,7 +2,7 @@ from xml.etree import ElementTree
 
 import requests
 
-from quickbase_json.helpers import FileUpload, Where, QBFile
+from quickbase_json.helpers import FileUpload, Where, QBFile, split_list_into_chunks
 from quickbase_json.qb_insert_update_response import QBInsertResponse
 from quickbase_json.qb_response import QBQueryResponse
 
@@ -229,6 +229,32 @@ class QuickbaseJSONClient:
             return r['properties']['choices']
         else:
             raise ConnectionError(f'{r["message"]}: {r["description"]}')
+    def multi_query_records(self, table: str, search_field: int, select: list, search_list: list):
+        """
+        Queries for record data.
+        https://developer.quickbase.com/operation/runQuery
+        :param table: quickbase table
+        :param search_field: int, fid of field to search
+        :param select: list, list of FIDs to return for found records
+        :param search_list: list of values to search for
+        :return: json data of records {data: ..., fields: ...}
+        """
+        response_for_return = {'data': [], 'fields': [],
+                               'metadata': {'numFields': 0, 'numRecords': 0, 'skip': 0, 'totalRecords': 0}}
+        list_of_searches = split_list_into_chunks(array=search_list, chunk_size=10)
+        for list_of_100 in list_of_searches:
+            query = Where(fid=search_field, operator='EX', value=list_of_100).build(join='OR')
+            r = self.query_records(table=table, select=select, where=query)
+            if r.ok and r.status_code == 200:
+                response_for_return['data'].extend(r['data'])
+                response_for_return['fields'] = r['fields']
+                response_for_return['metadata']['numFields'] = r['metadata']['numFields']
+                response_for_return['metadata']['numRecords'] += r['metadata']['numRecords']
+                response_for_return['metadata']['skip'] += r['metadata']['skip']
+                response_for_return['metadata']['totalRecords'] += r['metadata']['totalRecords']
+            else:
+                raise ConnectionError(f'{r.status_code}: {r.text}')
+        return response_for_return
 
 
     def __str__(self):
