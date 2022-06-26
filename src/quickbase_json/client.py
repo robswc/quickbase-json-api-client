@@ -212,6 +212,23 @@ class QuickbaseJSONClient:
     Misc.
     """
 
+    def get_choices(self, table: str, fid: int):
+        """
+        Get choices for a given multiple choice field
+        https://developer.quickbase.com/operation/getField
+        :param table: table id
+        :param fid: fid of field to get choices from
+        :return: list of choices from multiple choice field
+        """
+
+        headers = self.headers
+        params = {'tableId': f'{table}', 'fieldId': f'{fid}'}
+        fetch_url = "https://api.quickbase.com/v1/fields/" + str(fid) + "?tableId=" + table + "&includeFieldPerms=False"
+        r = requests.get(fetch_url, headers=headers).json()
+        if not 'message' in r:
+            return r['properties']['choices']
+        else:
+            raise ConnectionError(f'{r["message"]}: {r["description"]}')
     def multi_query_records(self, table: str, search_field: int, select: list, search_list: list):
         """
         Queries for record data.
