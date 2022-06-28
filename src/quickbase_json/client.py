@@ -19,7 +19,7 @@ class QuickbaseJSONClient:
         self.auth = auth
         self.headers = {
             'QB-Realm-Hostname': f'{self.realm}.quickbase.com',
-            'User-Agent': '{User-Agent}',
+            'User-Agent': str(kwargs.get('agent', 'QJAC')),
             'Authorization': f'QB-USER-TOKEN {auth}'
         }
         self.debug = debug
