@@ -8,7 +8,7 @@ from quickbase_json.qb_response import QBQueryResponse
 
 
 class QuickbaseJSONClient:
-    def __init__(self, realm, auth, debug=False, **kwargs):
+    def __init__(self, realm, auth, agent: str = 'QJAC', debug=False, **kwargs):
         """
         Creates a client object.
         :param realm: quickbase realm
@@ -19,7 +19,7 @@ class QuickbaseJSONClient:
         self.auth = auth
         self.headers = {
             'QB-Realm-Hostname': f'{self.realm}.quickbase.com',
-            'User-Agent': str(kwargs.get('agent', 'QJAC')),
+            'User-Agent': agent,
             'Authorization': f'QB-USER-TOKEN {auth}'
         }
         self.debug = debug
@@ -229,6 +229,7 @@ class QuickbaseJSONClient:
             return r['properties']['choices']
         else:
             raise ConnectionError(f'{r["message"]}: {r["description"]}')
+
     def multi_query_records(self, table: str, search_field: int, select: list, search_list: list):
         """
         Queries for record data.
@@ -255,7 +256,6 @@ class QuickbaseJSONClient:
             else:
                 raise ConnectionError(f'{r.status_code}: {r.text}')
         return response_for_return
-
 
     def __str__(self):
         """
