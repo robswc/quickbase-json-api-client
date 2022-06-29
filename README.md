@@ -12,6 +12,10 @@ Unofficial QuickBase JSON API wrapper for Python.
 
 Created by Synctivate Developers!  [Custom software solutions](https://www.synctivate.com/) from Fredericksburg, Virginia!
 
+# Documentation
+
+https://github.com/robswc/quickbase-json-api-client/wiki
+
 # Quickstart
 
 ## Installation
