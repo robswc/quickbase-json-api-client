@@ -6,8 +6,12 @@ from quickbase_json.helpers import FileUpload, Where, QBFile, split_list_into_ch
 from quickbase_json.qb_insert_update_response import QBInsertResponse
 from quickbase_json.qb_response import QBQueryResponse
 
-import pkg_resources
-version = pkg_resources.require("quickbase-json-api-client")[0].version
+try:
+    import pkg_resources
+    version = pkg_resources.require("quickbase-json-api-client")[0].version
+except Exception as e:
+    print(e)
+    version = 'unknown'
 
 
 class QuickbaseJSONClient:
