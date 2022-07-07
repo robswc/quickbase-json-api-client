@@ -6,9 +6,12 @@ from quickbase_json.helpers import FileUpload, Where, QBFile, split_list_into_ch
 from quickbase_json.qb_insert_update_response import QBInsertResponse
 from quickbase_json.qb_response import QBQueryResponse
 
+import pkg_resources
+version = pkg_resources.require("MyProject")[0].version
+
 
 class QuickbaseJSONClient:
-    def __init__(self, realm, auth, agent: str = 'QJAC', debug=False, **kwargs):
+    def __init__(self, realm, auth, agent: str = 'python-qjac', debug=False, **kwargs):
         """
         Creates a client object.
         :param realm: quickbase realm
