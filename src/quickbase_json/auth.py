@@ -1,4 +1,5 @@
 import datetime
+import urllib.parse
 from xml.etree import ElementTree
 
 import requests
@@ -38,7 +39,8 @@ class User:
         return self.authenticated
 
     def authenticate(self, password, hours):
-        url = f'https://{self.realm}.quickbase.com/db/main?a=API_Authenticate&username={self.username}&password={password}&hours={hours}'
+        pw = urllib.parse.quote(password)
+        url = f'https://{self.realm}.quickbase.com/db/main?a=API_Authenticate&username={self.username}&password={pw}&hours={hours}'
         r = requests.post(url=url)
 
         tree = ElementTree.fromstring(r.content)
@@ -56,3 +58,12 @@ class User:
             return AuthResponse(error_code=error_code)
         else:
             return AuthResponse(error_code=int(xml_dict.get("errcode")), error=xml_dict.get("errtext"))
+
+
+class QBUser(User):
+    """
+    Same as "User" class, just offers backwards compatibility.
+    Recommended to use QBUser, NOT User for better typing.
+    """
+    def __init__(self, realm, username):
+        super().__init__(realm, username)
