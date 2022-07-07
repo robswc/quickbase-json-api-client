@@ -12,6 +12,10 @@ Unofficial QuickBase JSON API wrapper for Python.
 
 Created by Synctivate Developers!  [Custom software solutions](https://www.synctivate.com/) from Fredericksburg, Virginia!
 
+# Documentation
+
+https://github.com/robswc/quickbase-json-api-client/wiki
+
 # Quickstart
 
 ## Installation
@@ -30,7 +34,7 @@ client = QBClient(realm="yourRealm", auth="userToken")
 ```
 
 Where `yourRealm` is the name (subdomain) of your Quickbase Realm and `userToken` is the user token used to authenticate
-with the realm.
+with the realm.  You can also include an optional `agent: str` argument, which will change the User-Agent (used in headers) from the default "QJAC" to whatever string is passed.  This is _heavily recommended_, as it makes figuring out the origin of API calls easier.
 
 ## Query Records
 Querying for records is one of the most useful features of the Quickbase JSON API.  Querying records with QJAC can be done
