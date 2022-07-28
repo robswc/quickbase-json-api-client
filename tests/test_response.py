@@ -36,6 +36,7 @@ def test_convert_datetime():
     # test datetime convert w/o denest
     res = QBQueryResponse(sample_data=deepcopy(sample_data.record_data))
     res.convert_type('datetime')
+    print(res.data())
     dt_test = res.data()[0].get('8').get('value')
 
     # test datetime convert w/ denest

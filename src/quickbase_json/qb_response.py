@@ -59,6 +59,13 @@ class QBQueryResponse(QBResponse):
         """
         return self.get('data', False)
 
+    def first(self) -> dict:
+        """
+        Gets the first record in the data.
+        :return: dict
+        """
+        return self.data()[0]
+
     def info(self, prt=True):
         """
         Prints information about the response.
@@ -98,7 +105,7 @@ class QBQueryResponse(QBResponse):
 
             return info_str
 
-    def fields(self, prop):
+    def fields(self, prop) -> list:
         """
         Gets fields, given property, i.e. label, id or type
         :param prop: property of field
@@ -106,7 +113,7 @@ class QBQueryResponse(QBResponse):
         """
         return [i.get(prop) for i in self.get('fields')]
 
-    def data(self, key_type='int'):
+    def data(self, key_type='str') -> list:
         """
         Gets data, shorthand for .get('data')
         :return: data
@@ -114,7 +121,7 @@ class QBQueryResponse(QBResponse):
         data = self.get('data', False)
         if key_type == 'int':
             return [{int(k): v for k, v in d.items()} for d in data]
-        elif key_type == 'str':
+        elif key_type == 'str' or key_type == 'string':
             return [{str(k): v for k, v in d.items()} for d in data]
         else:
             raise ValueError('Invalid key type.')
@@ -128,7 +135,7 @@ class QBQueryResponse(QBResponse):
         print("\033[91m", 'Relevant Data:\n\n', data, '\n', "\033[0m")
 
     @operation
-    def denest(self):
+    def denest(self) -> QBResponse:
         """
         Denests data, i.e. if in {'key': {'value': actual_value}} format. -> {'key': actual_value}
         :return: QBResponse
