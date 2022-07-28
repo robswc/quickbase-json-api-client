@@ -106,12 +106,18 @@ class QBQueryResponse(QBResponse):
         """
         return [i.get(prop) for i in self.get('fields')]
 
-    def data(self):
+    def data(self, key_type='int'):
         """
         Gets data, shorthand for .get('data')
         :return: data
         """
-        return self.get('data', False)
+        data = self.get('data', False)
+        if key_type == 'int':
+            return [{int(k): v for k, v in d.items()} for d in data]
+        elif key_type == 'str':
+            return [{str(k): v for k, v in d.items()} for d in data]
+        else:
+            raise ValueError('Invalid key type.')
 
     @staticmethod
     def prd(data):
