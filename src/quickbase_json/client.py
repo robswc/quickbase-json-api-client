@@ -113,7 +113,7 @@ class QuickbaseJSONClient:
         """
 
         headers = self.headers
-        body = {'to': table, 'where': where}
+        body = {'from': table, 'where': where}
 
         if self.debug:
             print(f'QJAC : delete_records : body ---> \n{body}')
