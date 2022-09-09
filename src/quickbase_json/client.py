@@ -8,6 +8,7 @@ from quickbase_json.qb_response import QBQueryResponse
 
 try:
     import pkg_resources
+
     version = pkg_resources.require("quickbase-json-api-client")[0].version
 except Exception as e:
     print(e)
@@ -110,10 +111,11 @@ class QuickbaseJSONClient:
         :param table: The unique identifier of the table.
         :param where: The filter to delete records. To delete all records specify a filter that will include all records.
         :return: dict, numberDeleted is number of records deleted.
+        :
         """
 
         headers = self.headers
-        body = {'to': table, 'where': where}
+        body = {'from': table, 'where': where}
 
         if self.debug:
             print(f'QJAC : delete_records : body ---> \n{body}')
