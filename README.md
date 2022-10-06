@@ -5,6 +5,8 @@
 ![build](https://img.shields.io/github/workflow/status/robswc/quickbase-json-api-client/Python%20application?style=for-the-badge)
 ![size](https://img.shields.io/github/languages/code-size/robswc/quickbase-json-api-client?style=for-the-badge)
 ![license](https://img.shields.io/github/license/robswc/quickbase-json-api-client?style=for-the-badge)
+![downloads](https://img.shields.io/pypi/dm/quickbase-json-api-client?style=for-the-badge)
+
 
 Unofficial QuickBase JSON API wrapper for Python.
 
