@@ -251,7 +251,7 @@ class QuickbaseJSONClient:
         """
         response_for_return = {'data': [], 'fields': [],
                                'metadata': {'numFields': 0, 'numRecords': 0, 'skip': 0, 'totalRecords': 0}}
-        list_of_searches = split_list_into_chunks(array=search_list, chunk_size=10)
+        list_of_searches = split_list_into_chunks(array=search_list, chunk_size=100)
         for list_of_100 in list_of_searches:
             query = Where(fid=search_field, operator='EX', value=list_of_100).build(join='OR')
             r = self.query_records(table=table, select=select, where=query)
