@@ -52,7 +52,10 @@ class QuickbaseJSONClient:
             where = where.build()
 
         if kwargs.get('_test_', None):
-            return {'from': table, 'select': select, 'where': where}
+            return {
+                'from': table,
+                'select': select,
+                'where': where}
 
         if table == '':
             raise ValueError('Table cannot be blank')
@@ -61,7 +64,10 @@ class QuickbaseJSONClient:
             raise ValueError('Selection must contain at least one <int>')
 
         # create request body
-        body = {'from': table, 'select': select, 'where': where}
+        body = {
+            'from': table,
+            'select': select,
+            'where': where}
         # update with keyword args
         body.update(kwargs)
 
@@ -84,16 +90,33 @@ class QuickbaseJSONClient:
 
         return res
 
-    def insert_update_records(self, table: str, data: list):
+    def insert_update_records(self, table: str, data: list, legacy: bool = False):
         """
         Inerts or updates records in a given table.
         https://developer.quickbase.com/operation/upsert
         :param table: table to add records to
         :param data: list of dict of data, [{"6": {"value": 'example'}}] (do not include 3, record id to insert)
+        :param legacy: if true, will use legacy insert/update method
         :return: record id of created/updated records
         """
 
-        body = {'to': table, 'data': data}
+        def fix_null_values(json_data):
+            """
+            Fixes null values in json data
+            :param json_data: json data
+            :return: fixed json data
+            """
+            for record in json_data:
+                for key, value in record.items():
+                    if value is None:
+                        record[key] = {
+                            'value': ''}
+            return json_data
+
+        body = {
+            'to': table,
+            'data': data if legacy else fix_null_values(data)
+        }
 
         if self.debug:
             print(f'QJAC : insert_update : body ---> \n{body}')
@@ -115,7 +138,9 @@ class QuickbaseJSONClient:
         """
 
         headers = self.headers
-        body = {'from': table, 'where': where}
+        body = {
+            'from': table,
+            'where': where}
 
         if self.debug:
             print(f'QJAC : delete_records : body ---> \n{body}')
@@ -163,8 +188,10 @@ class QuickbaseJSONClient:
         """
 
         headers = self.headers
-        params = {'appId': f'{app_id}'}
-        body = {'name': name}.update(kwargs)
+        params = {
+            'appId': f'{app_id}'}
+        body = {
+            'name': name}.update(kwargs)
 
         if self.debug:
             print(f'QJAC : create_table : body ---> \n{body}')
@@ -180,7 +207,8 @@ class QuickbaseJSONClient:
         """
 
         headers = self.headers
-        params = {'appId': f'{app_id}'}
+        params = {
+            'appId': f'{app_id}'}
         body = None
 
         if self.debug:
@@ -202,7 +230,8 @@ class QuickbaseJSONClient:
         """
 
         headers = self.headers
-        params = {'tableId': f'{table_id}'}
+        params = {
+            'tableId': f'{table_id}'}
         return requests.get('https://api.quickbase.com/v1/fields', params=params, headers=headers).json()
 
     """
@@ -231,7 +260,9 @@ class QuickbaseJSONClient:
         """
 
         headers = self.headers
-        params = {'tableId': f'{table}', 'fieldId': f'{fid}'}
+        params = {
+            'tableId': f'{table}',
+            'fieldId': f'{fid}'}
         fetch_url = "https://api.quickbase.com/v1/fields/" + str(fid) + "?tableId=" + table + "&includeFieldPerms=False"
         r = requests.get(fetch_url, headers=headers).json()
         if not 'message' in r:
@@ -249,8 +280,14 @@ class QuickbaseJSONClient:
         :param search_list: list of values to search for
         :return: json data of records {data: ..., fields: ...}
         """
-        response_for_return = {'data': [], 'fields': [],
-                               'metadata': {'numFields': 0, 'numRecords': 0, 'skip': 0, 'totalRecords': 0}}
+        response_for_return = {
+            'data': [],
+            'fields': [],
+            'metadata': {
+                'numFields': 0,
+                'numRecords': 0,
+                'skip': 0,
+                'totalRecords': 0}}
         list_of_searches = split_list_into_chunks(array=search_list, chunk_size=100)
         for list_of_100 in list_of_searches:
             query = Where(fid=search_field, operator='EX', value=list_of_100).build(join='OR')
