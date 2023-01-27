@@ -1,10 +1,15 @@
-from xml.etree import ElementTree
+import datetime
+import json
+import os
+import hashlib
 
 import requests
 
 from quickbase_json.helpers import FileUpload, Where, QBFile, split_list_into_chunks
 from quickbase_json.qb_insert_update_response import QBInsertResponse
 from quickbase_json.qb_response import QBQueryResponse
+
+QUERY_CACHE = 'query_cache'
 
 try:
     import pkg_resources
@@ -89,6 +94,49 @@ class QuickbaseJSONClient:
             print(f'QJAC : query_records : QBResponse ---> \n{res}')
 
         return res
+
+    def cache_query(self, table: str, select: list, where: any, hours: float, **kwargs):
+        """
+        Caches a query for a given amount of time.
+        https://developer.quickbase.com/operation/runQuery
+        :param table: quickbase table
+        :param select: list, list of fids to query
+        :param where: Quickbase query language string. i.e. {3.EX.100}
+        :param hours: Number of hours to cache the query for.
+        :param kwargs: optional request parameters.
+        :return: json data of records {data: ..., fields: ...}
+        """
+
+        # create query_cache directory if it does not exist
+        if not os.path.exists(QUERY_CACHE):
+            os.makedirs(QUERY_CACHE)
+
+        # get query hash
+        h = hashlib.md5(f'{table}_{select}_{where}'.encode('utf-8')).hexdigest()
+
+        # get last updated, hours
+        query_file = f'{QUERY_CACHE}/{h}.json'
+        if os.path.exists(query_file):
+            query_json = json.load(open(query_file, 'r')) if os.path.exists(query_file) else {}
+            last_updated = datetime.datetime.fromtimestamp(query_json.get('last_updated'))
+            cache_hours = query_json.get('hours', None)
+            # check if query is cached and if it is not expired
+            if not datetime.datetime.now() - last_updated > datetime.timedelta(hours=cache_hours):
+                res = QBQueryResponse()
+                res.update({'data': query_json['response']})
+                res.ok = True
+                return res
+
+        else:
+            # query is not cached or expired, run query and cache it
+            res = self.query_records(table, select, where, **kwargs)
+            data = {
+                'last_updated': datetime.datetime.now().timestamp(),
+                'hours': hours,
+                'response': res.data()
+            }
+            open(f'{QUERY_CACHE}/{h}.json', 'w').write(json.dumps(data))
+            return res
 
     def insert_update_records(self, table: str, data: list, legacy: bool = False):
         """
