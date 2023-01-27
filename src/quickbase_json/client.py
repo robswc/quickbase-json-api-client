@@ -149,16 +149,11 @@ class QuickbaseJSONClient:
         """
 
         def fix_null_values(json_data):
-            """
-            Fixes null values in json data
-            :param json_data: json data
-            :return: fixed json data
-            """
+            """Remove any fields with a null value."""
             for record in json_data:
-                for key, value in record.items():
-                    if value is None:
-                        record[key] = {
-                            'value': ''}
+                for key, value in list(record.items()):
+                    if value.get('value', None) is None:
+                        del record[key]
             return json_data
 
         body = {
